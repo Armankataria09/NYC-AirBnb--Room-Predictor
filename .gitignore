@@ -1,0 +1,5 @@
+Model_Pipeline.pkl
+*.pkl
+venv/
+__pycache__/
+.env

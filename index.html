@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f8fc" />
+  <title>StayWise | Room Type Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">S</span><span>staywise<span class="brand-dot">.</span></span></a>
+    <div class="topbar-right">
+      <span class="api-indicator"><i id="statusDot"></i><span id="apiStatus">Checking API…</span></span>
+      <button class="icon-button" id="themeHint" type="button" aria-label="Light theme"><span>☼</span></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="intro">
+      <div class="eyebrow"><span class="eyebrow-line"></span> SMART ROOM TYPE PREDICTION</div>
+      <h1>Find the right fit<br><span>for every stay.</span></h1>
+      <p class="intro-copy">Enter the listing details and let your machine-learning model predict its most likely room type.</p>
+      <div class="trust-row"><span>✦</span> Powered by your trained ML pipeline <b>·</b> Instant predictions</div>
+    </section>
+
+    <section class="workspace">
+      <form class="form-card" id="predictionForm">
+        <div class="card-heading">
+          <div><span class="step-label">LISTING DETAILS</span><h2>Tell us about the property</h2></div>
+          <span class="required-note"><i></i> All fields required</span>
+        </div>
+
+        <div class="section-title"><span class="section-icon">⌖</span><div><b>Location</b><small>Where is this listing situated?</small></div></div>
+        <div class="field-grid">
+          <label class="field"><span>Latitude</span><input name="latitude" type="number" min="-90" max="90" step="any" placeholder="e.g. 40.7128" required><small>Between -90 and 90</small></label>
+          <label class="field"><span>Longitude</span><input name="longitude" type="number" min="-180" max="180" step="any" placeholder="e.g. -74.0060" required><small>Between -180 and 180</small></label>
+          <label class="field"><span>Neighbourhood group</span><input name="neighbourhood_group" list="boroughs" placeholder="e.g. Manhattan" required><datalist id="boroughs"><option value="Manhattan"><option value="Brooklyn"><option value="Queens"><option value="Bronx"><option value="Staten Island"></datalist></label>
+          <label class="field"><span>Neighbourhood</span><input name="neighbourhood" type="text" placeholder="e.g. Harlem" required></label>
+        </div>
+
+        <div class="section-title section-spaced"><span class="section-icon">⌂</span><div><b>Property & pricing</b><small>Basic details about the accommodation</small></div></div>
+        <div class="field-grid">
+          <label class="field"><span>Price per night <em>($)</em></span><input name="price" type="number" min="0.01" step="0.01" placeholder="150" required></label>
+          <label class="field"><span>Minimum nights</span><input name="minimum_nights" type="number" min="1" max="365" step="1" placeholder="2" required></label>
+          <label class="field"><span>Host's total listings</span><input name="calculated_host_listings_count" type="number" min="0" step="1" placeholder="1" required></label>
+          <label class="field"><span>Availability (days/year)</span><input name="availability_365" type="number" min="0" max="365" step="1" placeholder="180" required></label>
+        </div>
+
+        <div class="section-title section-spaced"><span class="section-icon">✧</span><div><b>Guest feedback</b><small>Review activity for this listing</small></div></div>
+        <div class="field-grid">
+          <label class="field"><span>Number of reviews</span><input name="number_of_reviews" type="number" min="0" step="1" placeholder="42" required></label>
+          <label class="field"><span>Reviews per month</span><input name="reviews_per_month" type="number" min="0" step="any" placeholder="1.25" required></label>
+        </div>
+
+        <div class="form-footer">
+          <button class="reset-button" type="reset">↺ <span>Clear form</span></button>
+          <button class="predict-button" id="predictButton" type="submit"><span class="button-label">Predict room type</span><span class="button-arrow">↗</span></button>
+        </div>
+        <p class="form-message" id="formMessage" role="alert"></p>
+      </form>
+
+      <aside class="result-column">
+        <div class="result-card" id="resultCard">
+          <div class="result-top"><span class="step-label">YOUR PREDICTION</span><span class="sparkle">✳</span></div>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-illustration"><span class="illustration-house">⌂</span><span class="illustration-star">✦</span></div>
+            <h3>Your result lives here.</h3>
+            <p>Complete the listing details and run a prediction to see the model's output.</p>
+            <div class="empty-divider"></div>
+            <div class="mini-feature"><span>01</span><div><b>Enter listing data</b><small>Use the property details on the left.</small></div></div>
+            <div class="mini-feature"><span>02</span><div><b>Get an instant result</b><small>Your connected API runs the model.</small></div></div>
+          </div>
+          <div class="prediction-output hidden" id="predictionOutput">
+            <div class="result-kicker">PREDICTED ROOM TYPE</div>
+            <div class="predicted-type" id="predictedType">—</div>
+            <p class="result-subtitle">The model's predicted category for this listing.</p>
+            <div class="confidence-heading"><b>Class probabilities</b><span id="confidenceSummary">Model output</span></div>
+            <div id="probabilityList" class="probability-list"></div>
+            <div class="result-meta"><span class="success-check">✓</span><span>Prediction completed successfully</span></div>
+          </div>
+        </div>
+        <div class="tip-card"><span class="tip-icon">✦</span><div><b>For a better prediction</b><p>Use values in the same units and format as the data used to train your model.</p></div></div>
+        <div class="api-card">
+          <div class="api-card-head"><span>API CONNECTION</span><span class="connection-label" id="connectionLabel">Not checked</span></div>
+          <label class="api-url-label" for="apiUrl">Backend base URL</label>
+          <div class="api-url-row"><input id="apiUrl" type="url" value="http://127.0.0.1:8000" spellcheck="false"><button id="checkApi" type="button">Test</button></div>
+          <small>Endpoint used: <code>/predict</code></small>
+        </div>
+      </aside>
+    </section>
+    <footer><span>STAYWISE <b>·</b> ML ROOM TYPE PREDICTOR</span><span>Built for smarter listing insights</span></footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
